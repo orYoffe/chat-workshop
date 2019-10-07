@@ -12,11 +12,18 @@ app.get("/", function(req, res) {
 
 io.on("connection", function(socket) {
   const username = socket.handshake.query.username;
+  if (!username) {
+    socket.disconnect();
+    return;
+  }
+
   users.push(username);
-  console.log(
-    "-------------socket.handshake.query.username----------",
-    socket.handshake.query.username
-  );
+  socket.on("disconnect", function(msg) {
+    const index = users.indexOf(username);
+    if (index > -1) {
+      users.splice(index, 1);
+    }
+  });
   socket.on("chat message", function(msg) {
     const newMessage = username + ": " + msg;
     messages.push(newMessage);
