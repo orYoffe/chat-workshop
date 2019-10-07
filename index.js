@@ -18,7 +18,9 @@ io.on("connection", function(socket) {
   }
 
   users.push(username);
-  socket.on("disconnect", function(msg) {
+  io.emit("all messages", messages);
+
+  socket.on("disconnect", function() {
     const index = users.indexOf(username);
     if (index > -1) {
       users.splice(index, 1);
