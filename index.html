@@ -44,10 +44,31 @@
       #messages {
         margin-bottom: 40px;
       }
+      #users {
+        position: absolute;
+        width: 300px;
+        top: 0;
+        right: 0;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        border: 3px solid cadetblue;
+        border-radius: 5px;
+      }
+      #users li {
+        padding: 5px 10px;
+      }
+      #users li:nth-child(odd) {
+        background: #eee;
+      }
+      #users {
+        margin-bottom: 40px;
+      }
     </style>
   </head>
   <body>
     <ul id="messages"></ul>
+    <ul id="users"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
@@ -77,6 +98,13 @@
               $messages.append($("<li>").text(msg));
             });
             window.scrollTo(0, document.body.scrollHeight);
+          });
+          socket.on("users", function(users) {
+            const $users = $("#users");
+            $users.html("");
+            users.forEach(msg => {
+              $users.append($("<li>").text(msg));
+            });
           });
           socket.on("chat message", function(msg) {
             $("#messages").append($("<li>").text(msg));

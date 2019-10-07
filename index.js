@@ -19,11 +19,13 @@ io.on("connection", function(socket) {
 
   users.push(username);
   io.emit("all messages", messages);
+  io.emit("users", users);
 
   socket.on("disconnect", function() {
     const index = users.indexOf(username);
     if (index > -1) {
       users.splice(index, 1);
+      io.emit("users", users);
     }
   });
   socket.on("chat message", function(msg) {
