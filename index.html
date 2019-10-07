@@ -55,15 +55,46 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function() {
-        var socket = io();
+        let hasUsername = false;
+        let username = localStorage.getItem("username");
+        let socket;
+        function connect() {
+          socket = io({
+            query: {
+              username: username
+            }
+          });
+          $("#m").attr("placeholder", "Message:");
+
+          socket.on("chat message", function(msg) {
+            $("#messages").append($("<li>").text(msg));
+            window.scrollTo(0, document.body.scrollHeight);
+          });
+        }
+
+        if (username && username.length) {
+          connect();
+          hasUsername = true;
+        } else {
+          $("#m").attr("placeholder", "Username");
+        }
+
         $("form").submit(function() {
-          socket.emit("chat message", $("#m").val());
+          const input = $("#m").val();
+          if (username && username.length) {
+            hasUsername = true;
+            socket.emit("chat message", input);
+          } else {
+            if (input && input.length) {
+              username = input;
+              connect();
+              hasUsername = true;
+            } else {
+              return;
+            }
+          }
           $("#m").val("");
           return false;
-        });
-        socket.on("chat message", function(msg) {
-          $("#messages").append($("<li>").text(msg));
-          window.scrollTo(0, document.body.scrollHeight);
         });
       });
     </script>
