@@ -48,55 +48,52 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+    <form action="" id="form">
+      <input id="message" autocomplete="off" /><button>Send</button>
     </form>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-      $(function() {
-        let hasUsername = false;
-        let username = localStorage.getItem("username");
-        let socket;
-        function connect() {
-          socket = io({
-            query: {
-              username: username
-            }
-          });
-          $("#m").attr("placeholder", "Message:");
+      let socket;
+      let username;
 
-          socket.on("chat message", function(msg) {
-            $("#messages").append($("<li>").text(msg));
-            window.scrollTo(0, document.body.scrollHeight);
-          });
-        }
+      function addMessage(msg) {
+        const li = document.createElement("li");
+        li.innerText = msg;
+        document.getElementById("messages").appendChild(li);
+        window.scrollTo(0, document.body.scrollHeight);
+      }
 
+      function onSubmit(e) {
+        e.preventDefault();
+        const inputValue = document.getElementById("message").value;
         if (username && username.length) {
+          socket.emit("chat message", inputValue);
+        } else if (inputValue && inputValue.length) {
+          username = inputValue;
           connect();
-          hasUsername = true;
-        } else {
-          $("#m").attr("placeholder", "Username");
         }
+        document.getElementById("message").value = "";
+      }
 
-        $("form").submit(function() {
-          const input = $("#m").val();
-          if (username && username.length) {
-            hasUsername = true;
-            socket.emit("chat message", input);
-          } else {
-            if (input && input.length) {
-              username = input;
-              connect();
-              hasUsername = true;
-            } else {
-              return;
-            }
+      function connect() {
+        socket = io({
+          query: {
+            username: username
           }
-          $("#m").val("");
-          return false;
         });
-      });
+
+        document
+          .getElementById("message")
+          .setAttribute("placeholder", "Message:");
+
+        socket.on("chat message", addMessage);
+      }
+
+      document
+        .getElementById("message")
+        .setAttribute("placeholder", "Username");
+
+      document.getElementById("form").onsubmit = onSubmit;
     </script>
   </body>
 </html>
