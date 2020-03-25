@@ -3,7 +3,30 @@ const http = require("http").Server(app);
 const jsonfile = require("jsonfile");
 const io = require("socket.io")(http);
 const path = require("path");
+const { Client } = require("pg");
 const port = process.env.PORT || 3000;
+
+require("dotenv").config();
+const client = new Client({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+  ssl: "required"
+});
+
+client.connect(err => {
+  if (err) {
+    console.error("connection error", err.stack);
+  } else {
+    console.log("connected to DB");
+    client
+      .query("SELECT * FROM chat.users")
+      .then(res => console.log("--¯_(ツ)_/¯-----------res----------", res))
+      .catch(e => console.error(e.stack));
+  }
+});
 
 const DB_DIR = path.join(__dirname, "./DB.json");
 function readDB() {
