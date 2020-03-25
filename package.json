@@ -2,10 +2,17 @@
   "name": "chat-workshop",
   "version": "0.0.1",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.15.2",
+    "pg": "^7.18.2",
     "socket.io": "^1.7.3"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "jsonfile": "^5.0.0",
+    "nodemon": "^2.0.2"
   }
 }
